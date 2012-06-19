@@ -1,0 +1,54 @@
+#!/bin/sh
+
+DEBUG=0
+
+# Check if we have a valid connection with the SSH agent
+HASAGENT=$(ssh-add -l 2>/dev/null | head -n1 | grep -oE "[0-9a-zA-Z:]{47}")
+
+if [ -z "${HASAGENT}" ]; then
+	cat <<EOF >&2
+Could not find a proper SSH key. This will prevent you from pushing later.
+
+Commit aborted!
+EOF
+	exit 1
+fi
+
+# Retrieve author information as Git sees it while commiting
+AUTHORINFO=$(git var GIT_AUTHOR_IDENT) || exit 1
+NAME=$(printf '%s\n' "${AUTHORINFO}" | sed -n 's/^\(.*\) <.*$/\1/p')
+EMAIL=$(printf '%s\n' "${AUTHORINFO}" | sed -n 's/^.* <\(.*\)> .*$/\1/p')
+
+if [ $DEBUG -eq 1 ]; then
+	printf "AUTHORINFO: %s\n" "${AUTHORINFO}"
+	printf "NAME: %s\n" "${NAME}"
+	printf "EMAIL: %s\n" "${EMAIL}"
+fi
+
+# Retrieve author information of the Repo user
+REPONAME=$(git config --get user.name)
+REPOEMAIL=$(git config --get user.email)
+
+if [ $DEBUG -eq 1 ]; then
+	printf "REPONAME: %s\n" "${REPONAME}"
+	printf "REPOEMAIL: %s\n" "${REPOEMAIL}"
+fi
+
+# If the author is the same as the Repo user or root
+if [ "${NAME}" = "${REPONAME}" ] || [ "${EMAIL}" = "${REPOEMAIL}" ] ||
+	(git var GIT_AUTHOR_IDENT | grep -qv root); then
+	cat <<EOF >&2
+You have a SSH key set, but the author information is still set to the System user.
+This probably means we could not match the email address in the SSH key to a valid Git
+user. 
+
+If you think this is an error, add an entry to /etc/gitusers. If you want to commit
+right now without doing this, you can use the below command to set an author for this
+commit.
+
+GIT_AUTHOR_NAME="Your Name" GIT_AUTHOR_EMAIL="your.name@email.com" git commit
+
+Commit aborted!
+EOF
+	exit 2
+fi

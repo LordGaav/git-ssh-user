@@ -2,7 +2,7 @@
 
 DEBUG=0
 
-ID=`id -u`
+ID=$(id -u)
 
 # Check if we could detect the current user id
 if [ -z "${ID}" ]; then
@@ -60,9 +60,11 @@ if [ $DEBUG -eq 1 ]; then
 	printf "REPOEMAIL: %s\n" "${REPOEMAIL}"
 fi
 
+$(git var GIT_AUTHOR_IDENT | grep -qv root)
+AUTH_CHECK=$?
+
 # If the author is the same as the Repo user or root
-if [ "${NAME}" = "${REPONAME}" ] || [ "${EMAIL}" = "${REPOEMAIL}" ] ||
-	(git var GIT_AUTHOR_IDENT | grep -qv root); then
+if [ "${NAME}" = "${REPONAME}" ] || [ "${EMAIL}" = "${REPOEMAIL}" ] || [ $AUTH_CHECK -ne 0 ]; then
 	cat <<EOF >&2
 You have a SSH key set, but the author information is still set to the System user.
 This probably means we could not match the email address in the SSH key to a valid Git

@@ -2,6 +2,32 @@
 
 DEBUG=0
 
+ID=`id -u`
+
+# Check if we could detect the current user id
+if [ -z "${ID}" ]; then
+	cat <<EOF >&2
+Could not determine Unix user id.
+
+Commit aborted!
+EOF
+	exit 1
+fi
+
+# Check if we aren't currently logged in as root
+if [ "${ID}" = "0" ]; then
+	cat <<EOF >&2
+You are currently logged in as root. You should never commit as root.
+
+Log in as the proper user for this repository. If you can't directly
+SSH as the proper user, you might have to add your SSH key to the authorized_keys
+file of the user.
+
+Commit aborted!
+EOF
+	exit 1
+fi
+
 # Check if we have a valid connection with the SSH agent
 HASAGENT=$(ssh-add -l 2>/dev/null | head -n1 | grep -oE "[0-9a-zA-Z:]{47}")
 

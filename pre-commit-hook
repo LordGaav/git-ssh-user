@@ -84,7 +84,7 @@ fi
 ## Lint checks
 # PHP lint
 PHP_EXT="\.php$|\.thtml$"
-FAILED_LINT=$(git diff-index --cached --name-only HEAD | egrep "$PHP_EXT" | xargs --replace -n 1 sh -c 'php -l "{}" > /dev/null 2> /dev/null || echo " {}"')
+FAILED_LINT=$(git diff-index --cached HEAD | grep -v "0000000000000000000000000000000000000000 D" | awk '{ print $6 }' | egrep "$PHP_EXT" | xargs --replace -n 1 sh -c 'php -l "{}" > /dev/null 2> /dev/null || echo " {}"')
 if [ -n "$FAILED_LINT" ]
 then
 	echo -e "Some input files failed PHP lint, commit aborted: \n$FAILED_LINT"

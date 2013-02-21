@@ -2,11 +2,19 @@
 
 # Include this file in ~/.profile
 
-SSHFINGERPRINT=$(ssh-add -l 2>/dev/null | head -n1 | grep -oE "[0-9a-zA-Z:]{47}")
+SSHFINGERPRINT=$(ssh-add -l 2>/dev/null | grep -oE "[0-9a-zA-Z:]{47}")
 
 if [ -z "${SSHFINGERPRINT}" ]; then
 	return 0;
 fi
+
+for fp in $SSHFINGERPRINT; do
+	USERLINE=$(grep "${fp}" /etc/gitusers 2>/dev/null)
+
+	if [ ! -z "${USERLINE}" ]; then
+		break;
+	fi
+done
 
 USERLINE=$(grep "${SSHFINGERPRINT}" /etc/gitusers 2>/dev/null)
 

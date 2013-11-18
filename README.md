@@ -12,6 +12,11 @@ three pipe seperated values per line:
 aa:bb:cc:dd:ee:ff:11:22:33:44:55:66:77:88:99:00|Nick Douma|n.douma@nekoconeko.nl
 ```
 
+An script has been provided that can create this file automatically for you based
+on an existing SSH authorized_keys file. By default it uses the one for root,
+you can override this behavious by passing the environment variable called
+AUTHORIZED_KEYS_FILE.
+
 If the provided git pre-commit hook is activated, it checks if the user
 that is trying to commit has a valid SSH key in ssh-add. If so, it checks
 if the author of the commit matches the committer, which signifies that

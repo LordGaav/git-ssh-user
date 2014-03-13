@@ -90,4 +90,12 @@ then
 	echo -e "Some input files failed PHP lint, commit aborted: \n$FAILED_LINT"
 	exit 1
 fi
+# Ruby lint
+RUBY_EXT="\.rb$"
+FAILED_LINT=$(git diff-index --cached HEAD | grep -v "0000000000000000000000000000000000000000 D" | awk '{ print $6 }' | egrep "$RUBY_EXT" | xargs --replace -n 1 sh -c 'ruby -c "{}" > /dev/null 2> /dev/null || echo " {}"')
+if [ -n "$FAILED_LINT" ]
+then
+	echo -e "Some input files failed Ruby lint, commit aborted: \n$FAILED_LINT"
+	exit 1
+fi
 exit 0

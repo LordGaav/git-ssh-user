@@ -14,8 +14,10 @@ EOF
 	exit 1
 fi
 
+ALLOWROOT=$(git config --get commit.allowroot)
+
 # Check if we aren't currently logged in as root
-if [ "${ID}" = "0" ]; then
+if [ "${ID}" = "0" ] && [ "x${ALLOWROOT}" != "xyes" ]; then
 	cat <<EOF >&2
 You are currently logged in as root. You should never commit as root.
 

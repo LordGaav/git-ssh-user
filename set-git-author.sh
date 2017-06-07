@@ -2,7 +2,7 @@
 
 # Include this file in ~/.profile
 
-SSHFINGERPRINT=$(ssh-add -l 2>/dev/null | grep -oE "[0-9a-zA-Z:]{47}")
+SSHFINGERPRINT=$(ssh-add -l 2>/dev/null | cut -d" " -f2)
 
 if [ -z "${SSHFINGERPRINT}" ]; then
 	return 0;

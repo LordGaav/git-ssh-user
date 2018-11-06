@@ -19,7 +19,7 @@ if [ ! -d "$SOURCE_HOME/.ssh" -o ! -f "$SOURCE_HOME/.ssh/authorized_keys" ]; the
 fi
 
 if [ ! -d "$DEST_HOME/.ssh" ]; then
-    mkdir -m 600 "$DEST_HOME/.ssh"
+    mkdir -m 700 "$DEST_HOME/.ssh"
     chown $DEST_USER "$DEST_HOME/.ssh"
     chgrp $DEST_USER "$DEST_HOME/.ssh"
 fi

@@ -31,7 +31,7 @@ EOF
 fi
 
 # Check if we have a valid connection with the SSH agent
-HASAGENT=$(ssh-add -l 2>/dev/null | head -n1 | grep -oE "[0-9a-zA-Z:]{47}")
+HASAGENT=$(ssh-add -l 2>/dev/null | head -n1 | grep -oE "[0-9a-zA-Z:]{47}|SHA256:[A-Za-z0-9+/=]{43}")
 
 if [ -z "${HASAGENT}" ]; then
 	cat <<EOF >&2
